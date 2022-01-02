@@ -1,7 +1,7 @@
 import { PlayCircleOutline, StopCircleOutlined } from "@mui/icons-material";
-import { Grid, Slider, Input, IconButton } from "@mui/material";
+import { Grid, Slider, Input, IconButton, TextField } from "@mui/material";
 import { useState, useEffect, useCallback } from "react";
-import useInterval from "./useInterval";
+import useInterval from "../utils/useInterval";
 import TapTempo from "./TapTempo";
 
 let audioContext = null;
@@ -12,9 +12,11 @@ let scheduleAheadTime = 0.1; // How far ahead to schedule audio (sec)
 let nextNoteTime = 0.0; // when the next note is due
 
 const Metronome = (props) => {
+  
   const [tempo, setTempo] = useState(120);
   const [isRunning, setIsRunning] = useState(false);
   const [beats, setBeats] = useState(4);
+
   const handleSliderChange = (event, newTempo) => {
     setTempo(newTempo);
   };
@@ -55,7 +57,7 @@ const Metronome = (props) => {
       const osc = audioContext.createOscillator();
       const envelope = audioContext.createGain();
 
-      osc.frequency.value = beatNumber % beats === 0 ? 1000 : 800;
+      osc.frequency.value = beatNumber % beats === 0 ? 2000 : 1200;
       envelope.gain.value = 1;
       envelope.gain.exponentialRampToValueAtTime(1, time + 0.001);
       envelope.gain.exponentialRampToValueAtTime(0.001, time + 0.02);
@@ -95,9 +97,9 @@ const Metronome = (props) => {
   }, [isRunning, scheduler]);
 
   return (
-    <Grid sx={{ flexGrow: 1 }} container justifyContent="center" spacing={2}>
-      <Grid item xs={6}>
-        <Grid container alignItems="center" justifyContent="center" spacing={2}>
+    <Grid sx={{ flexGrow: 1 }} container justifyContent="center" spacing={1}>
+      <Grid item lg={12}>
+        <Grid container alignItems="center" justifyContent="center" spacing={1}>
           <Grid item alignItems="center">
             <IconButton
               aria-label="start"
@@ -107,10 +109,10 @@ const Metronome = (props) => {
                 setIsRunning((r) => !r);
               }}
             >
-              {!isRunning ? <PlayCircleOutline /> : <StopCircleOutlined />}
+              {!isRunning ? <PlayCircleOutline sx={{fontSize: '3rem'}}/> : <StopCircleOutlined sx={{fontSize: '3rem'}}/>}
             </IconButton>
           </Grid>
-          <Grid item xs={4} alignItems="center">
+          <Grid item xs={6} md={4} lg={2} alignItems="center">
             <Slider
               size="small"
               scale={calculateTempo}
@@ -122,11 +124,13 @@ const Metronome = (props) => {
             />
           </Grid>
           <Grid item>
-            <Input
+            <TextField
               value={tempo}
+              label="BPM"
               size="small"
               onChange={handleInputChange}
               onBlur={handleBlur}
+              variant="outlined"
               inputProps={{
                 step: 1,
                 min: 35,
